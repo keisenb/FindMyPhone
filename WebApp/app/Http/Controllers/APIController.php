@@ -52,6 +52,11 @@ class APIController extends Controller
 
         $id = $request->header('id');
         $phone = $request->header('phone');
+
+        if($phone == "+1?") {
+            return response()->json("There was an issue in adding your phone number. Please try again.");
+        }
+
         $user = User::where('alexa_id', $id)->first();
 
         if($user === null) {
