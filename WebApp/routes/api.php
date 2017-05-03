@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-
-Route::get('/call', 'APIController@Call');
 Route::get('/answer', 'APIController@Answered');
+
+Route::post('/call', 'APIController@Call');
 Route::post('/add', 'APIController@AddNumber');

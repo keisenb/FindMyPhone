@@ -84,17 +84,27 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 function handleFindRequest(intent, session, callback) {
     var cardTitle = "Find";
+    var host = "https://phone.kyle-eisenbarger.com";
+    var route = "/api/find";
+    var url = {
+                url: host + route,
+                headers: {
+                    'phone': "+19139078801",
+                    'id' : session.user.userId
+                }
+            };
+
     var speechOutput = "";
-    var req = unirest("GET", "https://phone.kyle-eisenbarger.com/api/call");
 
-    req.end(function (res) {
-      if (res.error) throw new Error(res.error);
-      console.log(res.body);
-      console.log(res.status);
 
-      callback(session.attributes,
-          buildSpeechletResponse(cardTitle, res.body, "", true));
-  });
+    apiRequest(url, function(error, response, body) {
+                if (error !== null) {
+                    console.error("ERROR: " + error);
+                }
+                console.info("RESPONSE: " + response);
+                console.info("BODY: " + body);
+                callback({}, buildSpeechletResponse(cardTitle, body, "", true));
+                });
 }
 
 function handleAddRequest(intent, session, callback) {
