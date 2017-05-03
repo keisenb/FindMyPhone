@@ -2,15 +2,12 @@
 var unirest = require("unirest");
 var request = require("request");
 
-
 exports.handler = function (event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
-
         /*if (event.session.application.applicationId !== "amzn1.ask.skill.XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX") {
            context.fail("Invalid Application ID");
          }*/
-
         if (event.session.new) {
             onSessionStarted({requestId: event.request.requestId}, event.session);
         }
@@ -36,7 +33,6 @@ exports.handler = function (event, context) {
     }
 };
 
-
 function onSessionStarted(sessionStartedRequest, session) {
     console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId
         + ", sessionId=" + session.sessionId);
@@ -59,7 +55,6 @@ function onIntent(intentRequest, session, callback) {
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
 
-    // dispatch custom intents to handlers here
     if (intentName == 'Find') {
         handleFindRequest(intent, session, callback);
     }
@@ -89,14 +84,9 @@ function handleFindRequest(intent, session, callback) {
     var url = {
                 url: host + route,
                 headers: {
-                    'phone': "+19139078801",
                     'id' : session.user.userId
                 }
             };
-
-    var speechOutput = "";
-
-
     apiRequest(url, function(error, response, body) {
                 if (error !== null) {
                     console.error("ERROR: " + error);
@@ -110,17 +100,14 @@ function handleFindRequest(intent, session, callback) {
 function handleAddRequest(intent, session, callback) {
     var host = "https://phone.kyle-eisenbarger.com";
     var route = "/api/add";
+    var cardTitle = "Add";
     var url = {
                 url: host + route,
                 headers: {
-                    'phone': "+19139078801",
+                    'phone': intent.slots.PhoneNumber.value,
                     'id' : session.user.userId
                 }
             };
-
-    var cardTitle = "Add";
-    var speechOutput = "";
-
 
     apiRequest(url, function(error, response, body) {
                 if (error !== null) {
@@ -155,7 +142,6 @@ function apiRequest(url, callback) {
         callback(error, response, body);
     });
 }
-
 
 function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
     return {
