@@ -1,5 +1,7 @@
 'use strict';
 var unirest = require("unirest");
+var request = require("request");
+
 
 exports.handler = function (event, context) {
     try {
@@ -83,39 +85,41 @@ function onSessionEnded(sessionEndedRequest, session) {
 function handleFindRequest(intent, session, callback) {
     var cardTitle = "Find";
     var speechOutput = "";
-    var req = unirest("GET", "http://api.whatdoestrumpthink.com/api/v1/quotes/random");
-
-    req.headers({
-      "postman-token": "5efe01e5-2128-dae6-14e1-9b4e61cca239",
-      "cache-control": "no-cache"
-    });
+    var req = unirest("GET", "https://phone.kyle-eisenbarger.com/api/call");
 
     req.end(function (res) {
       if (res.error) throw new Error(res.error);
       console.log(res.body);
+      console.log(res.status);
 
       callback(session.attributes,
-          buildSpeechletResponse(cardTitle, res.body.message, "", true));
+          buildSpeechletResponse(cardTitle, res.body, "", true));
   });
 }
 
 function handleAddRequest(intent, session, callback) {
+    var host = "https://phone.kyle-eisenbarger.com";
+    var route = "/api/add";
+    var url = {
+                url: host + route,
+                headers: {
+                    'phone': "+19139078801",
+                    'id' : session.user.userId
+                }
+            };
+
     var cardTitle = "Add";
     var speechOutput = "";
-    var req = unirest("GET", "http://api.whatdoestrumpthink.com/api/v1/quotes/random");
 
-    req.headers({
-      "postman-token": "5efe01e5-2128-dae6-14e1-9b4e61cca239",
-      "cache-control": "no-cache"
-    });
 
-    req.end(function (res) {
-      if (res.error) throw new Error(res.error);
-      console.log(res.body);
-
-      callback(session.attributes,
-          buildSpeechletResponse(cardTitle, res.body.message, "", true));
-  });
+    apiRequest(url, function(error, response, body) {
+                if (error !== null) {
+                    console.error("ERROR: " + error);
+                }
+                console.info("RESPONSE: " + response);
+                console.info("BODY: " + body);
+                callback({}, buildSpeechletResponse(cardTitle, body, "", false));
+                });
 }
 
 function handleHelpRequest(intent, session, callback) {
@@ -132,6 +136,14 @@ function handleStopRequest(intent, session, callback) {
 
     callback(session.attributes,
         buildSpeechletResponse(cardTitle, speechOutput, "", true));
+}
+
+
+function apiRequest(url, callback) {
+    console.log("Starting request to " + url.url);
+    request.post(url, function(error, response, body) {
+        callback(error, response, body);
+    });
 }
 
 

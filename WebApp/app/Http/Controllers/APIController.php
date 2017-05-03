@@ -17,7 +17,7 @@ class APIController extends Controller
 
         $call = $client->calls->create(
             "+19139078801", $number,
-            array("url" => "https://kyle-eisenbarger.com/phone/test.xml")
+            array("url" => "https://phone.kyle-eisenbarger.com/api/answer")
         );
 
         return response()->json("We just called you!", 200);
@@ -27,6 +27,19 @@ class APIController extends Controller
         $response = new Twiml();
         $response->say('Hello we are glad you found your phone! Thanks for using our Alexa skill. Goodbye.');
         print $response;
+    }
+
+    public function AddNumber(Request $request) {
+
+        $id = $request->header('id');
+        $phone = $request->header('phone');
+
+        //todo
+
+
+        return response()->json("Phone was successfully added. Go ahead and try to find it now.", 200);
+
+
     }
 
 

@@ -20,3 +20,4 @@ use Illuminate\Http\Request;
 
 Route::get('/call', 'APIController@Call');
 Route::get('/answer', 'APIController@Answered');
+Route::post('/add', 'APIController@AddNumber');
